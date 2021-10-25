@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 class VideoContent(models.Model):
@@ -11,7 +12,7 @@ class VideoContent(models.Model):
     description       = models.TextField(blank=True, null=True)
     state             = models.CharField(max_length=2, choices=VideoStateOptions.choices, default=VideoStateOptions.DRAFT)
     slug              = models.SlugField(blank=True, null=True)
-    video_id          = models.CharField(max_length=220)
+    video_id          = models.CharField(max_length=220, unique=True)
     active            = models.BooleanField(default=True)
     publish_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
 
@@ -27,6 +28,8 @@ class VideoContent(models.Model):
             self.publish_timestamp=timezone.now()
         elif self.state == self.VideoStateOptions.DRAFT:
             self.publish_timestamp=None
+        if self.slug is None:
+            self.slug=slugify(self.title)
         super().save(*args, **kwargs)
 
 
