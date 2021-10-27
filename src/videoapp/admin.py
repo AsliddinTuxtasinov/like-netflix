@@ -13,10 +13,10 @@ class VideoContentAdmin(admin.ModelAdmin):
 
 @admin.register(VideoAllProxy)
 class VideoAllProxyAdmin(admin.ModelAdmin):
-    list_display = ['title', 'video_id','state', 'is_published']
+    list_display = ['title', 'video_id','state', 'is_published', 'get_playlist_ids']
     search_fields = ['video_id']
     list_filter = ['state','active']
-    readonly_fields = ['id', 'is_published','publish_timestamp']
+    readonly_fields = ['id', 'is_published','publish_timestamp', 'get_playlist_ids']
 
     class Meta:
         model=VideoAllProxy

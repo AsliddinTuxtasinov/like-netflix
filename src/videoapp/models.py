@@ -43,6 +43,10 @@ class VideoContent(models.Model):
     def is_published(self):
         return self.active
 
+    def get_playlist_ids(self):
+        # self.<foregned_obj>_set.all() == Foregned_obj.objects.filter(video=video_a)
+        return list( self.playlist_featured.all().values_list('id', flat=True) )
+
 
 class VideoAllProxy(VideoContent):
     class Meta:
