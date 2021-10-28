@@ -7,7 +7,7 @@ from videoapp.models import VideoContent
 from .models import Playlist
 
 
-class VideoContentModelTestCase(TestCase):
+class PlaylisttModelTestCase(TestCase):
 
     # video obectlarini test uchun yaratishga tayyor turish
     def create_videos(self):
@@ -17,6 +17,7 @@ class VideoContentModelTestCase(TestCase):
         self.obj_video = obj_video
         self.obj_video2 = obj_video2
         self.obj_video3 = obj_video3
+        self.video_qs = VideoContent.objects.all()
 
     # vaqtinchalik test uchun test object yaratish
     def setUp(self):
@@ -24,8 +25,7 @@ class VideoContentModelTestCase(TestCase):
         self.obj_a = Playlist.objects.create( title="bu title fieldi", video=self.obj_video )
         obj_b = Playlist.objects.create( title="bu title fieldi", state=PublishStateOptions.PUBLISH, video=self.obj_video )
         # obj_b.videos.set( [self.obj_video, self.obj_video2, self.obj_video3] )
-        v_qs=VideoContent.objects.all()
-        obj_b.videos.set( v_qs )
+        obj_b.videos.set( self.video_qs )
         obj_b.save()
         self.obj_b = obj_b
 
@@ -34,9 +34,16 @@ class VideoContentModelTestCase(TestCase):
         self.assertEqual(self.obj_a.video, self.obj_video)
 
     # videos(ManToMany) ni test qilish
-    def test_video_playlist_ids(self):
+    def test_video_playlist_items(self):
         count = self.obj_b.videos.all().count()
         self.assertEqual(count, 3)
+
+    # PlaylistItem va playlist videos(through model)ni test qilish
+    def test_playlist_video_through_model(self):
+        v_qs = sorted( list( self.video_qs.values_list('id') ) )
+        video_qs = sorted( list( self.obj_b.videos.all().values_list('id') ) )
+        playlist_item_qs = sorted( list( self.obj_b.playlistitem_set.all().values_list('video') ) )
+        self.assertEqual(v_qs, video_qs, playlist_item_qs)
 
     # video(ForeginKey) ni test qilish
     def test_video_playlist_ids_propery(self):

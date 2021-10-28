@@ -13,8 +13,7 @@ class PlaylistManagerQuerySet(models.QuerySet):
         now = timezone.now()
         return self.filter(
             state=PublishStateOptions.PUBLISH,
-            publish_timestamp__lte=now
-        )
+            publish_timestamp__lte=now )
 
 
 class PlaylistManager(models.Manager):
@@ -31,7 +30,7 @@ class Playlist(models.Model):
     state             = models.CharField(max_length=2, choices=PublishStateOptions.choices, default=PublishStateOptions.DRAFT )
     slug              = models.SlugField(blank=True, null=True)
     video             = models.ForeignKey(VideoContent, related_name='playlist_featured', blank=True, null=True, on_delete=models.SET_NULL)
-    videos            = models.ManyToManyField(VideoContent, related_name='playlist_itrms', blank=True )
+    videos            = models.ManyToManyField(VideoContent, related_name='playlist_itrms', blank=True, through='PlaylistItem' )
     active            = models.BooleanField(default=True)
     publish_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
 
@@ -44,7 +43,15 @@ class Playlist(models.Model):
     def is_published(self):
         return self.active
 
-
-
 pre_save.connect(published_state_pre_save, sender=Playlist)
 pre_save.connect(slugify_pre_save, sender=Playlist)
+
+
+class PlaylistItem(models.Model):
+    playlist  = models.ForeignKey(Playlist, on_delete=models.CASCADE)
+    video     = models.ForeignKey(VideoContent, on_delete=models.CASCADE)
+    order     = models.IntegerField(default=1)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', '-timestamp']
