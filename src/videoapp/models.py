@@ -6,14 +6,12 @@ from videoflix.db.models import PublishStateOptions
 from videoflix.db.receivers import published_state_pre_save, slugify_pre_save
 
 
-
 class VideoContentManagerQuerySet(models.QuerySet):
     def published(self):
         now = timezone.now()
         return self.filter(
             state=PublishStateOptions.PUBLISH,
-            publish_timestamp__lte=now
-        )
+            publish_timestamp__lte=now)
 
 
 class VideoContentManager(models.Manager):
@@ -25,16 +23,15 @@ class VideoContentManager(models.Manager):
 
 
 class VideoContent(models.Model):
-    title             = models.CharField(max_length=220)
-    description       = models.TextField(blank=True, null=True)
-    state             = models.CharField(max_length=2, choices=PublishStateOptions.choices,
-                                         default=PublishStateOptions.DRAFT )
-    slug              = models.SlugField(blank=True, null=True)
-    video_id          = models.CharField(max_length=220, unique=True)
-    active            = models.BooleanField(default=True)
+    title = models.CharField(max_length=220)
+    description = models.TextField(blank=True, null=True)
+    state = models.CharField(max_length=2, choices=PublishStateOptions.choices, default=PublishStateOptions.DRAFT)
+    slug = models.SlugField(blank=True, null=True)
+    video_id = models.CharField(max_length=220, unique=True)
+    active = models.BooleanField(default=True)
     publish_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
 
-    objects=VideoContentManager()
+    objects = VideoContentManager()
 
     def __str__(self):
         return self.title
@@ -45,20 +42,20 @@ class VideoContent(models.Model):
 
     def get_playlist_ids(self):
         # self.<foregned_obj>_set.all() == Foregned_obj.objects.filter(video=video_a)
-        return list( self.playlist_featured.all().values_list('id', flat=True) )
+        return list(self.playlist_featured.all().values_list('id', flat=True))
 
 
 class VideoAllProxy(VideoContent):
     class Meta:
-        proxy=True
-        verbose_name="All Video"
+        proxy = True
+        verbose_name = "All Video"
         verbose_name_plural = "All Videos"
 
 
 class VideoPublishedProxy(VideoContent):
     class Meta:
-        proxy=True
-        verbose_name="Published Video"
+        proxy = True
+        verbose_name = "Published Video"
         verbose_name_plural = "Published Videos"
 
 

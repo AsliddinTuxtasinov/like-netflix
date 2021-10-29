@@ -138,4 +138,5 @@ dmypy.json
 cython_debug/
 .idea
 .vscode/
+identifier.sqlite
 videoflix_venv/
