@@ -5,6 +5,7 @@ from django.utils import timezone
 from videoflix.db.models import PublishStateOptions
 from videoflix.db.receivers import published_state_pre_save, slugify_pre_save
 from videoapp.models import VideoContent
+from categories.models import Category
 
 
 class PlaylistManagerQuerySet(models.QuerySet):
@@ -31,6 +32,7 @@ class Playlist(models.Model):
         PLAYLIST = "PLY", "Playlist"
 
     parent = models.ForeignKey("self", blank=True, null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(Category, related_name="playlist", blank=True, null=True, on_delete=models.SET_NULL)
     order = models.IntegerField(default=1)
     title = models.CharField(max_length=220)
     type = models.CharField(max_length=3, choices=PlayListTypeChoices.choices, default=PlayListTypeChoices.PLAYLIST)
