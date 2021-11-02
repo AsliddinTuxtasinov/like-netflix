@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models.signals import pre_save
 from django.utils import timezone
 
@@ -6,6 +7,7 @@ from videoflix.db.models import PublishStateOptions
 from videoflix.db.receivers import published_state_pre_save, slugify_pre_save
 from videoapp.models import VideoContent
 from categories.models import Category
+from tags.models import TaggedItem
 
 
 class PlaylistManagerQuerySet(models.QuerySet):
@@ -44,6 +46,7 @@ class Playlist(models.Model):
     videos = models.ManyToManyField(VideoContent, related_name='playlist_itrms', blank=True, through='PlaylistItem')
     active = models.BooleanField(default=True)
     publish_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
+    tags = GenericRelation(TaggedItem, related_query_name="playlist")
 
     objects = PlaylistManager()
 

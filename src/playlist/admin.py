@@ -1,4 +1,5 @@
 from django.contrib import admin
+from tags.admin import TaggedItemInline
 from .models import MovieProxy, TvShowProxy, TvShowSeasonProxy, Playlist, PlaylistItem
 
 
@@ -27,7 +28,7 @@ class TvShowProxyItemInline(admin.TabularInline):
 
 @admin.register(TvShowProxy)
 class TvShowProxyAdmin(admin.ModelAdmin):
-    inlines = [TvShowProxyItemInline]
+    inlines = [TaggedItemInline, TvShowProxyItemInline]
     # fields = ['title', 'description', 'state', 'video', 'slug']
 
     def get_queryset(self, request):
