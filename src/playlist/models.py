@@ -8,6 +8,7 @@ from videoflix.db.receivers import published_state_pre_save, slugify_pre_save
 from videoapp.models import VideoContent
 from categories.models import Category
 from tags.models import TaggedItem
+from ratings.models import Rating
 
 
 class PlaylistManagerQuerySet(models.QuerySet):
@@ -47,11 +48,19 @@ class Playlist(models.Model):
     active = models.BooleanField(default=True)
     publish_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
     tags = GenericRelation(TaggedItem, related_query_name="playlist")
+    ratings = GenericRelation(Rating, related_query_name="playlist")
 
     objects = PlaylistManager()
 
     def __str__(self):
         return self.title
+
+    def get_rating_avg(self):
+        return Playlist.objects.filter(id=self.id).aggregate(models.Avg("ratings__value"))
+
+    def get_rating_spread(self):
+        return Playlist.objects.filter(id=self.id).aggregate(
+            max=models.Max("ratings__value"), min=models.Min("ratings__value"))
 
     @property
     def is_published(self):
